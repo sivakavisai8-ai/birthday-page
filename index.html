@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday Yasasiwini 🌸</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+canvas { display: block; }
+
+.tap {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.text, .name, .sub {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+}
+
+.text {
+    top: 5%;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    animation: glow 2s infinite alternate;
+}
+
+.name {
+    top: 15%;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: #ffd6e8;
+    letter-spacing: 1px;
+}
+
+.sub {
+    top: 22%;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    opacity: 0.85;
+    padding: 0 10px;
+}
+
+.final, .from {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 2s;
+}
+
+.final {
+    bottom: 12%;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: #ffffaa;
+}
+
+.from {
+    bottom: 6%;
+    font-size: 1rem;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #ff9acb; }
+    to   { text-shadow: 0 0 30px #ffd6e8; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="tap" id="tap">💖 Tap Anywhere to Begin 💖</div>
+
+<div class="text">🌸 Happy Birthday 🌸</div>
+<div class="name">Yasasiwini</div>
+<div class="sub" id="typing"></div>
+
+<div class="final" id="finalMsg"></div>
+<div class="from" id="fromMsg"></div>
+
+<canvas id="canvas"></canvas>
+
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0cfdc6f2a7.mp3">
+</audio>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const music = document.getElementById("music");
+const tap = document.getElementById("tap");
+
+const typingText = "Wishing you a happy birthday my one and only best friend 💖";
+const finalText = "May your life always bloom with happiness 🌷";
+const fromText = "— From, Best friend Sai 💖";
+
+function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+resize();
+addEventListener("resize", resize);
+
+// Typing effect
+let i = 0;
+function type() {
+    if (i < typingText.length) {
+        document.getElementById("typing").textContent += typingText[i++];
+        setTimeout(type, Math.random()*80 + 30); // Random speed for natural typing
+    }
+}
+
+// Petals
+let petals = Array.from({length: 50}, () => ({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*5+1,
+    s: Math.random()*1+0.3
+}));
+
+function fallingPetals() {
+    ctx.fillStyle="#ffd6e8";
+    petals.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+        p.y+=p.s;
+        if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+}
+
+// Flower
+let bloom=0;
+function petal(x,y,r,a){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(a);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.quadraticCurveTo(r,-r,0,-r*2);
+    ctx.quadraticCurveTo(-r,-r,0,0);
+    ctx.fillStyle="#ffd6e8";
+    ctx.shadowBlur=20;
+    ctx.shadowColor="#ff9acb";
+    ctx.fill();
+    ctx.restore();
+}
+function flower(x,y){
+    for(let i=0;i<6;i++) petal(x,y,bloom,(Math.PI/3)*i);
+}
+
+// Heart fireworks
+function heartFirework() {
+    for(let t=0;t<Math.PI*2;t+=0.2){
+        let x=16*Math.pow(Math.sin(t),3);
+        let y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+        ctx.beginPath();
+        ctx.arc(canvas.width/2+x*8, canvas.height/3+y*8, 2, 0, Math.PI*2);
+        ctx.fillStyle=["#ff9acb","#ffd6e8","#ffffaa"][Math.random()*3|0];
+        ctx.fill();
+    }
+}
+
+// Sparkles
+let sparkles = Array.from({length: 60}, () => ({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+1,
+    dx: Math.random()*0.5-0.25,
+    dy: Math.random()*0.5-0.25
+}));
+function drawSparkles() {
+    ctx.fillStyle="#fff";
+    sparkles.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+        s.x += s.dx;
+        s.y += s.dy;
+        if(s.x<0 || s.x>canvas.width) s.dx*=-1;
+        if(s.y<0 || s.y>canvas.height) s.dy*=-1;
+    });
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const cx=canvas.width/2, cy=canvas.height/3;
+    flower(cx-120,cy);
+    flower(cx,cy-60);
+    flower(cx+120,cy);
+
+    fallingPetals();
+    drawSparkles();
+
+    if(bloom<30) bloom+=0.15;
+    if(bloom>28){
+        document.getElementById("finalMsg").style.opacity=1;
+        document.getElementById("fromMsg").style.opacity=1;
+        heartFirework();
+    }
+
+    requestAnimationFrame(animate);
+}
+
+// Start
+tap.onclick=()=>{
+    tap.style.display="none";
+    music.play();
+    type();
+    document.getElementById("finalMsg").textContent=finalText;
+    document.getElementById("fromMsg").textContent=fromText;
+    animate();
+};
+</script>
+
+</body>
+</html>
+
+<!-- do not change the markup -->
+<a href="#">
+  Checkout
+</a>
+
+<!-- 
+1. make look like a button
+2. change text color red on hover
+
+Cannot change html, only css.
+Look closely at
+-->  
+
+<div></div>
+<div></div>
+<div></div>
